@@ -10,16 +10,16 @@ import TabCard from "./SidebarComponents/TabCard"
 
 const Sidebar = () => {
   return (
-    <aside className="w-1/5 fixed left-0 top-20 ml-10 px-10 items-center bottom-0 overflow-y-scroll">
-      <TabCard name="Home" active IconName={CiHome} />
+    <aside className="fixed bottom-0 left-0 items-center w-1/5 px-10 ml-10 overflow-y-scroll top-20">
+      <TabCard name="Home" route="/dashboard" active IconName={CiHome} />
       <TabCard name="My Page" IconName={FiLayout} />
-      <h3 className="font-light text-xs my-3 text-neutral-400">STORE</h3>
-      <TabCard name="Products" IconName={MdOutlineFeed} />
+      <h3 className="my-3 text-xs font-light text-neutral-400">STORE</h3>
+      <TabCard name="Products" route="/products" IconName={MdOutlineFeed} />
       <TabCard name="Payments" IconName={MdOutlinePayments} />
-      <h3 className="font-light text-sm my-3 text-neutral-400">PUBLISH</h3>
+      <h3 className="my-3 text-sm font-light text-neutral-400">PUBLISH</h3>
       <TabCard name="Reports" IconName={FaChartBar} />
       <TabCard name="Transactions" IconName={VscArrowSwap} />
-      <h3 className="font-light text-xs my-3 text-neutral-400">SETTINGS</h3>
+      <h3 className="my-3 text-xs font-light text-neutral-400">SETTINGS</h3>
       <TabCard name="Integrations" IconName={AiOutlineAppstoreAdd} />
       <TabCard name="Pay Buttons" IconName={MdOutlineSmartButton} />
       <TabCard name="Account" IconName={BiUser} />
