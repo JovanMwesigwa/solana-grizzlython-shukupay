@@ -45,10 +45,10 @@ const Products = () => {
         </div>
       </div>
 
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
-      <ProductCard />
+      <ProductCard route="/pay/rolex-guy/123" />
+      <ProductCard route="/pay/rolex-guy/123" />
+      <ProductCard route="/pay/rolex-guy/123" />
+      <ProductCard route="/pay/rolex-guy/123" />
     </Layout>
   )
 }

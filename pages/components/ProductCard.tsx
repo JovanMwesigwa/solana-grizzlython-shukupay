@@ -1,6 +1,11 @@
+import Link from "next/link"
 import { BsLink } from "react-icons/bs"
 
-const ProductCard = () => {
+type Props = {
+  route: String
+}
+
+const ProductCard = ({ route }: Props) => {
   return (
     <div className="flex flex-col flex-1 my-2 ">
       <div className="flex flex-col w-full p-6 bg-white rounded-md shadow-sm h-60">
@@ -9,9 +14,9 @@ const ProductCard = () => {
             Posted at Feb 07, 2023 at 02:41 PM
           </h4>
 
-          <div className="cursor-pointer">
+          <Link href={route ? route : ""} className="cursor-pointer">
             <BsLink size={25} />
-          </div>
+          </Link>
         </div>
 
         <div className="flex flex-row flex-1 my-3">
