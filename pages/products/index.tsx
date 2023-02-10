@@ -3,6 +3,7 @@ import { AiOutlineShopping } from "react-icons/ai"
 import { FiExternalLink } from "react-icons/fi"
 import Layout from "../components/Layout"
 import ProductCard from "../components/ProductCard"
+import Link from "next/link"
 
 const Products = () => {
   return (
@@ -11,10 +12,13 @@ const Products = () => {
       {/* Top cards */}
 
       <div className="flex flex-row w-full my-5">
-        <div className="flex flex-row items-center justify-center flex-1 p-5 bg-white rounded-md shadow-sm cursor-pointer">
+        <Link
+          href="/products/new"
+          className="flex flex-row items-center justify-center flex-1 p-5 bg-white rounded-md shadow-sm cursor-pointer"
+        >
           <MdPostAdd size={22} />
           <h1 className="ml-3 font-medium">Add Product</h1>
-        </div>
+        </Link>
 
         <div className="flex flex-row items-center justify-center flex-1 p-5 mx-4 bg-white rounded-md shadow-sm cursor-pointer">
           <FiExternalLink size={22} />
