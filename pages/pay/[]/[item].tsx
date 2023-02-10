@@ -1,10 +1,16 @@
+import Image from "next/image"
+import QR from "../../../public/qr.png"
+import rolex from "../../../public/rolex.jpg"
+
 const Checkout = () => {
   return (
     <div className="flex flex-row items-center h-screen px-20 bg-neutral-100">
       <div className="flex flex-col justify-between flex-1 h-full p-10 bg-white shadow-md">
         <h1 className="text-xl font-bold">Super Spicy Meaty Rolex</h1>
 
-        <div className="w-1/2 my-6 rounded-md h-1/2 bg-neutral-50"></div>
+        <div className="relative w-1/2 my-6 overflow-hidden rounded-md h-1/2 bg-neutral-50">
+          <Image src={rolex} alt="itme image" fill />
+        </div>
 
         <div className="flex flex-col w-full">
           <h1 className="text-2xl font-bold">Total: $25</h1>
@@ -27,7 +33,10 @@ const Checkout = () => {
         </button>
       </div>
 
-      <div className="flex items-end w-1/3 h-full p-8 ">
+      <div className="flex flex-col justify-between w-1/3 h-full p-8">
+        <div className="relative flex w-full overflow-hidden rounded-md bg-neutral-500 h-2/3">
+          <Image src={QR} alt="qr code" fill />
+        </div>
         <div className="flex flex-col">
           <h4 className="text-sm">
             Add your email and you will get notified you when the seller

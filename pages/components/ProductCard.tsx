@@ -1,5 +1,7 @@
+import Image from "next/image"
 import Link from "next/link"
 import { BsLink } from "react-icons/bs"
+import rolex from "../../public/rolex.jpg"
 
 type Props = {
   route: String
@@ -20,7 +22,9 @@ const ProductCard = ({ route }: Props) => {
         </div>
 
         <div className="flex flex-row flex-1 my-3">
-          <div className="w-40 h-full rounded-md bg-neutral-300"></div>
+          <div className="relative w-40 h-full overflow-hidden rounded-md bg-neutral-300">
+            <Image src={rolex} alt="itme image" fill />
+          </div>
           <div className="flex flex-col ml-4">
             <h1 className="text-xl font-medium">Brand new Bata Shoes</h1>
             <p className="max-w-xs text-sm font-extralight text-neutral-300">
