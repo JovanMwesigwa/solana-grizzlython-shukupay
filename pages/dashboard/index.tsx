@@ -1,4 +1,3 @@
-import { FiShare } from "react-icons/fi"
 import { BsCalculatorFill } from "react-icons/bs"
 import { FcPlus } from "react-icons/fc"
 import { IoIosArrowForward } from "react-icons/io"
