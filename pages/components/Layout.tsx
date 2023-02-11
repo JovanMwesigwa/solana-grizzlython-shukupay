@@ -26,21 +26,23 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   if (!user)
     return (
-      <Auth
-        redirectTo="http://localhost:3000/dashboard"
-        appearance={{
-          theme: ThemeSupa,
-          style: {
-            container: {
-              padding: 15,
-              justifyItems: "center",
-            },
-          },
-        }}
-        supabaseClient={supabaseClient}
-        providers={["google"]}
-        socialLayout="horizontal"
-      />
+      <div className="flex flex-row h-screen w-full">
+        <div className="flex flex-1 bg-yellow-400 "></div>
+        <div className="flex flex-1 justify-center px-6 flex-col">
+          <Auth
+            redirectTo="http://localhost:3000/dashboard"
+            appearance={{
+              theme: ThemeSupa,
+              style: {
+                container: {},
+              },
+            }}
+            supabaseClient={supabaseClient}
+            providers={["google"]}
+            socialLayout="horizontal"
+          />
+        </div>
+      </div>
     )
 
   const signout = () => supabaseClient.auth.signOut()
