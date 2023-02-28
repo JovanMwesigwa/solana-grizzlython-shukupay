@@ -3,10 +3,16 @@ import { AiOutlineEnter, AiOutlineCloseCircle } from "react-icons/ai"
 import { RiDeleteBack2Line } from "react-icons/ri"
 import logo from "../../public/paynapple-lg.png"
 import { useState } from "react"
+import PayModal from "../components/ModalComponents/PayModal"
+import { useRouter } from "next/router"
+import { useMutation, useQuery } from "react-query"
+import { getStoreFromSlug, updateStoreTotalBalance } from "@/lib/database"
 
 const Terminal = () => {
   const [price, setPrice] = useState<any>(null)
   const [hasPoint, setHasPoint] = useState<boolean>(false)
+
+  const { query } = useRouter()
 
   const updatePrice = (num: string) => {
     let newPrice
@@ -24,6 +30,8 @@ const Terminal = () => {
     setPrice(newPrice)
   }
 
+  const { data, isLoading, error } = useQuery([query.s], getStoreFromSlug)
+
   const deleteLast = () => {
     let newPrice = price?.slice(0, -1)
     setPrice(newPrice)
@@ -33,8 +41,27 @@ const Terminal = () => {
     }
   }
 
+  const [isOpen, setIsOpen] = useState(false)
+
+  const openModal = () => {
+    setIsOpen(true)
+  }
+
+  const closeModal = () => {
+    setIsOpen(false)
+  }
+
   return (
     <div className="w-full bg-gray-900 h-screen flex flex-1 items-center justify-center">
+      {isOpen && Number(price) > 0 && (
+        <PayModal
+          address={data?.store.solana_address}
+          price={Number(price)}
+          closeModal={closeModal}
+          slug={data?.store.slug}
+          name={data?.store.name}
+        />
+      )}
       <div className="h-16 w-16 rounded-full absolute top-3 left-3">
         <Image src={logo} fill alt="paynapple logo" />
       </div>
@@ -138,7 +165,13 @@ const Terminal = () => {
             >
               <RiDeleteBack2Line size={30} />
             </button>
-            <button className="bg-green-400 flex items-center justify-center text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600">
+            <button
+              disabled={Number(price) <= 0 && !isLoading && !error}
+              onClick={openModal}
+              className={`bg-green-400 flex items-center justify-center text-white rounded-lg p-4 text-2xl font-bold ${
+                Number(price) > 0 && !isLoading && !error && "hover:bg-gray-600"
+              }`}
+            >
               <AiOutlineEnter size={30} />
             </button>
           </div>

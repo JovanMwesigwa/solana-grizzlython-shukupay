@@ -21,7 +21,8 @@ import Link from "next/link"
 const Dashboard = () => {
   const user = useUser()
 
-  // console.log(data.store)
+  const { data, isLoading, error } = useQuery([user?.id], getStore)
+  // console.log(data)
 
   return (
     <Layout>
@@ -51,13 +52,20 @@ const Dashboard = () => {
             </div>
             {/*  */}
 
-            <Link
-              href="/terminal"
-              className="flex flex-row items-center h-10 px-4 text-white bg-black rounded-full"
-            >
-              <BsCalculatorFill color="white" />
-              <h1 className="mx-3 text-sm font-medium">Start Terminal</h1>
-            </Link>
+            {!isLoading && !error && (
+              <Link
+                href={{
+                  pathname: "/terminal",
+                  query: {
+                    s: data?.store.slug,
+                  },
+                }}
+                className="flex flex-row items-center h-10 px-4 text-white bg-black rounded-full"
+              >
+                <BsCalculatorFill color="white" />
+                <h1 className="mx-3 text-sm font-medium">Start Terminal</h1>
+              </Link>
+            )}
           </div>
 
           <div className="w-full h-[0.5px] bg-neutral-200 my-6" />
@@ -79,7 +87,7 @@ const Dashboard = () => {
 
             {/*  */}
           </div>
-          <h1 className="text-6xl font-bold ">$0</h1>
+          <h1 className="text-6xl font-bold ">${data?.store.total}</h1>
           <div className="flex flex-row items-center w-full mt-5 justify-evenly">
             {/*  */}
 

@@ -16,7 +16,11 @@ const Sidebar = ({ store }: Props) => {
   return (
     <aside className="fixed bottom-0 left-0 items-center w-1/5 px-10 ml-10 overflow-y-scroll top-20">
       <TabCard name="Home" route="/dashboard" active IconName={CiHome} />
-      <TabCard name="My Page" IconName={FiLayout} route={store?.slug} />
+      <TabCard
+        name="My Page"
+        IconName={FiLayout}
+        route={`/store/${store?.slug}`}
+      />
       <h3 className="my-3 text-xs font-light text-neutral-400">STORE</h3>
       <TabCard name="Products" route="/products" IconName={MdOutlineFeed} />
       <TabCard name="Payments" IconName={MdOutlinePayments} />
