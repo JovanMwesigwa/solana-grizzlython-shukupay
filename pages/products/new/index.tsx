@@ -1,7 +1,13 @@
+import AuthComponent from "@/pages/components/Auth/AuthComponent"
+import { useUser } from "@supabase/auth-helpers-react"
 import Link from "next/link"
 import { AiOutlineArrowLeft } from "react-icons/ai"
 
 const AddProduct = () => {
+  const user = useUser()
+
+  if (!user) return <AuthComponent />
+
   return (
     <div className="flex flex-col flex-1 h-screen p-8 ">
       <div className="flex flex-row items-center justify-between w-full">

@@ -1,18 +1,40 @@
 import { FiShare } from "react-icons/fi"
-import PageProductCard from "./components/PageProductCard"
+import PageProductCard from "../components/PageProductCard"
+import { useQuery } from "react-query"
+import { getStoreFromSlug } from "@/lib/database"
+import { useRouter } from "next/router"
+import Image from "next/image"
+import logo from "../../public/paynapple-lg.png"
 
 const Store = () => {
+  const { data, isLoading, error } = useQuery(
+    ["fetchStore", "my-food-store"],
+    getStoreFromSlug
+  )
+
+  if (isLoading && !error)
+    return (
+      <div className="flex items-center justify-center">
+        <p>Loading....</p>
+      </div>
+    )
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center justify-between w-full h-16 px-12 shadow-sm">
-        <div className="w-12 h-12 bg-yellow-400 rounded-full"></div>
+        <div className="flex flex-row items-center justify-center">
+          <div className="relative w-16 h-16 rounded-full">
+            <Image src={logo} alt="paynapple logo" fill />
+          </div>
+          <h1 className="text-xl font-semibold">paynapple</h1>
+        </div>
 
         <div className="flex flex-row items-center justify-between">
-          <div className="flex items-center justify-center border-[0.5px] p-2 px-4 rounded-full">
+          <div className="flex items-center cursor-pointer justify-center border-[0.5px] p-2 px-4 rounded-full">
             <h1 className="font-medium">Contact</h1>
           </div>
 
-          <div className="flex items-center mx-4 justify-center border-[0.5px] p-2 px-4 rounded-full">
+          <div className="flex items-center mx-4 cursor-pointer justify-center border-[0.5px] p-2 px-4 rounded-full">
             <h1 className="font-medium">Visit</h1>
           </div>
 
@@ -22,24 +44,32 @@ const Store = () => {
         </div>
       </div>
 
-      <div className="relative flex flex-col items-center justify-center w-full h-60 bg-neutral-300">
+      {/* <div className="relative flex flex-col items-center justify-center w-full h-60 bg-neutral-300">
         <div className="absolute flex border-4 border-white rounded-full justify-self-auto w-44 h-44 bg-neutral-300 top-32"></div>
-      </div>
+      </div> */}
 
-      <div className="flex flex-col items-center justify-center w-full mt-6 h-44">
-        <h1 className="text-3xl font-bold">Oreal Thompson Payton</h1>
+      {/* <div className="flex flex-col items-center justify-center w-full mt-6 h-44">
+        <h1 className="text-3xl font-bold">{data?.store?.name}</h1>
         <h3 className="w-1/2 text-lg text-center overflow-clip ">
-          Entebbe Rd, Opposite UMEME Sub-Station
+          {data?.store?.bio}
         </h3>
-      </div>
+      </div> */}
 
       <div className="flex flex-col border-t-[0.5px] items-center py-6">
         <h4 className="text-sm font-medium text-neutral-500">
-          FEATURED PRODUCTS
+          {data?.store?.name}
         </h4>
 
         <div className="flex flex-row flex-1 w-full max-w-screen-lg my-5 ">
           <div className="flex flex-row flex-wrap flex-1 justify-evenly ">
+            <PageProductCard route="/pay/rolex-guy/123" />
+            <PageProductCard route="/pay/rolex-guy/123" />
+            <PageProductCard route="/pay/rolex-guy/123" />
+            <PageProductCard route="/pay/rolex-guy/123" />
+            <PageProductCard route="/pay/rolex-guy/123" />
+            <PageProductCard route="/pay/rolex-guy/123" />
+            <PageProductCard route="/pay/rolex-guy/123" />
+            <PageProductCard route="/pay/rolex-guy/123" />
             <PageProductCard route="/pay/rolex-guy/123" />
             <PageProductCard route="pay/rolex-guy/123" />
             <PageProductCard route="pay/rolex-guy/123" />
@@ -48,9 +78,7 @@ const Store = () => {
           <div className="flex w-1/3 p-8 flex-col border-[0.5px] rounded-md h-1/2 ">
             <h1 className="text-lg font-bold">
               <strong>Tip</strong>{" "}
-              <span className="text-neutral-500">
-                RolexGuy Entebbe Foods a{" "}
-              </span>
+              <span className="text-neutral-500">{data?.store?.name} </span>
               crypto-nyte 😉
             </h1>
 
@@ -77,4 +105,5 @@ const Store = () => {
     </div>
   )
 }
+
 export default Store
