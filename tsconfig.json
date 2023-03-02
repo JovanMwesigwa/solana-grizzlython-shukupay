@@ -19,6 +19,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "lib/supabaseClient.ts", "lib/supabaseClient.ts", "lib/createPayTx.js"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "lib/supabaseClient.ts", "lib/supabaseClient.ts", "lib/createPayTx.js", "lib/createPayQR.ts"],
   "exclude": ["node_modules"]
 }

@@ -19,7 +19,7 @@ const Sidebar = ({ store }: Props) => {
       <TabCard
         name="My Page"
         IconName={FiLayout}
-        route={`/store/${store?.slug}`}
+        route={`/store?s=${store?.slug}`}
       />
       <h3 className="my-3 text-xs font-light text-neutral-400">STORE</h3>
       <TabCard name="Products" route="/products" IconName={MdOutlineFeed} />

@@ -4,8 +4,20 @@ import { FiExternalLink } from "react-icons/fi"
 import Layout from "../components/Layout"
 import ProductCard from "../components/ProductCard"
 import Link from "next/link"
+import { useQuery } from "react-query"
+import { useUser } from "@supabase/auth-helpers-react"
+import { getProducts, getStore } from "@/lib/database"
 
 const Products = () => {
+  const user = useUser()
+
+  const { data: store } = useQuery([user?.id], getStore)
+
+  const { data, isLoading, error } = useQuery(
+    ["storeID", store?.store.id],
+    getProducts
+  )
+
   return (
     <Layout>
       <h1 className="text-xl font-medium">Create a new product</h1>
@@ -33,7 +45,7 @@ const Products = () => {
 
       <div className="flex flex-row border-b-[0.5px] border-neutral-200 w-full my-4">
         <div className="flex flex-col mr-6 border-b-[0.5px] border-black cursor-pointer items-center">
-          <h1 className="mb-2 font-medium">Published 2</h1>
+          <h1 className="mb-2 font-medium">Published {data?.data?.length}</h1>
         </div>
 
         <div className="flex flex-col items-center mr-6 cursor-pointer">
@@ -45,10 +57,21 @@ const Products = () => {
         </div>
       </div>
 
-      <ProductCard route="/pay/rolex-guy/123" />
-      <ProductCard route="/pay/rolex-guy/123" />
-      <ProductCard route="/pay/rolex-guy/123" />
-      <ProductCard route="/pay/rolex-guy/123" />
+      {isLoading ? (
+        <div className="flex items-center justify-center">
+          <p>Loading...</p>
+        </div>
+      ) : (
+        <>
+          {data?.data?.map((item: any) => (
+            <ProductCard
+              key={item.id}
+              item={item}
+              route={`/pay?s=${store?.store.slug}&p=${item.id}`}
+            />
+          ))}
+        </>
+      )}
     </Layout>
   )
 }

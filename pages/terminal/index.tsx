@@ -6,13 +6,22 @@ import { useState } from "react"
 import PayModal from "../components/ModalComponents/PayModal"
 import { useRouter } from "next/router"
 import { useMutation, useQuery } from "react-query"
-import { getStoreFromSlug, updateStoreTotalBalance } from "@/lib/database"
+import {
+  getStore,
+  getStoreFromSlug,
+  updateStoreTotalBalance,
+} from "@/lib/database"
+import { useUser } from "@supabase/auth-helpers-react"
+import usdc from "../../public/usdc.png"
+import sol from "../../public/solana.png"
 
 const Terminal = () => {
   const [price, setPrice] = useState<any>(null)
   const [hasPoint, setHasPoint] = useState<boolean>(false)
+  const [totalPrice, setTotalPrice] = useState<any>(null)
+  const [activeToken, setActiveToken] = useState("USDC")
 
-  const { query } = useRouter()
+  const user = useUser()
 
   const updatePrice = (num: string) => {
     let newPrice
@@ -30,7 +39,7 @@ const Terminal = () => {
     setPrice(newPrice)
   }
 
-  const { data, isLoading, error } = useQuery([query.s], getStoreFromSlug)
+  const { data, isLoading, error } = useQuery([user?.id], getStore)
 
   const deleteLast = () => {
     let newPrice = price?.slice(0, -1)
@@ -44,6 +53,8 @@ const Terminal = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const openModal = () => {
+    const overallPrice = totalPrice + Number(price)
+    setTotalPrice(overallPrice)
     setIsOpen(true)
   }
 
@@ -51,15 +62,19 @@ const Terminal = () => {
     setIsOpen(false)
   }
 
+  // console.log("DEBUG: ", data?.store)
+
   return (
     <div className="w-full bg-gray-900 h-screen flex flex-1 items-center justify-center">
-      {isOpen && Number(price) > 0 && (
+      {isOpen && !isLoading && !error && Number(price) > 0 && (
         <PayModal
           address={data?.store.solana_address}
           price={Number(price)}
+          total={totalPrice}
           closeModal={closeModal}
           slug={data?.store.slug}
           name={data?.store.name}
+          activeToken={activeToken}
         />
       )}
       <div className="h-16 w-16 rounded-full absolute top-3 left-3">
@@ -67,10 +82,39 @@ const Terminal = () => {
       </div>
       <div className="text-white w-1/2 h-full flex flex-col">
         <div className=" flex flex-col justify-center flex-grow p-4">
+          <div className="flex w-full flex-row items-center">
+            {activeToken != "USDC" ? (
+              <button
+                onClick={() => setActiveToken("USDC")}
+                className={`w-8 h-9  mr-9 px-5 relative `}
+              >
+                <Image src={sol} alt="solana logo" fill />
+              </button>
+            ) : (
+              <button
+                onClick={() => setActiveToken("SOL")}
+                className={`w-8 h-9 px-5 mr-9 relative `}
+              >
+                <Image src={usdc} alt="usdc logo" fill />
+              </button>
+            )}
+            <span className="text-lg text-gray-500 font-medium">
+              {activeToken}
+            </span>
+          </div>
+
           <div className="my-5 bg-gray-800 rounded-lg p-4 flex justify-between items-center">
-            <div className="text-lg font-bold">Paynapple POS</div>
+            <div className="text-lg font-light text-gray-600">
+              Paynapple POS
+            </div>
             <div className="flex items-center">
-              <div className="text-xl font-bold">${price ? price : "0.00"}</div>
+              <div className="text-xl font-bold">
+                {activeToken === "USDC" && <span>$</span>}
+
+                {price ? price : "0.00"}
+
+                {activeToken === "SOL" && <span> SOL</span>}
+              </div>
             </div>
           </div>
 

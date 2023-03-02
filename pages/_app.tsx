@@ -1,8 +1,12 @@
 import "@/styles/globals.css"
 import type { AppProps } from "next/app"
 import { createBrowserSupabaseClient } from "@supabase/auth-helpers-nextjs"
-import { SessionContextProvider, Session } from "@supabase/auth-helpers-react"
-import { useState } from "react"
+import {
+  SessionContextProvider,
+  Session,
+  useUser,
+} from "@supabase/auth-helpers-react"
+import { useEffect, useState } from "react"
 import { QueryClient, QueryClientProvider } from "react-query"
 import {
   ConnectionProvider,
@@ -15,6 +19,9 @@ import {
   PhantomWalletAdapter,
   SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets"
+import { useRouter } from "next/router"
+import { store } from "../state/store"
+import { Provider } from "react-redux"
 
 // Default styles that can be overridden by your app
 require("@solana/wallet-adapter-react-ui/styles.css")
@@ -42,19 +49,21 @@ export default function App({
   ]
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <SessionContextProvider
-        supabaseClient={supabaseClient}
-        initialSession={pageProps.initialSession}
-      >
-        <ConnectionProvider endpoint={endpoint}>
-          <WalletProvider wallets={wallets} autoConnect>
-            <WalletModalProvider>
-              <Component {...pageProps} />
-            </WalletModalProvider>
-          </WalletProvider>
-        </ConnectionProvider>
-      </SessionContextProvider>
-    </QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <SessionContextProvider
+          supabaseClient={supabaseClient}
+          initialSession={pageProps.initialSession}
+        >
+          <ConnectionProvider endpoint={endpoint}>
+            <WalletProvider wallets={wallets} autoConnect>
+              <WalletModalProvider>
+                <Component {...pageProps} />
+              </WalletModalProvider>
+            </WalletProvider>
+          </ConnectionProvider>
+        </SessionContextProvider>
+      </QueryClientProvider>
+    </Provider>
   )
 }

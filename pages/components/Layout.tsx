@@ -7,27 +7,73 @@ import AuthComponent from "./Auth/AuthComponent"
 import { useQuery } from "react-query"
 import { getStore } from "@/lib/database"
 import Router from "next/router"
+import type { RootState } from "../../state/store"
+import { useSelector, useDispatch } from "react-redux"
+import { fetchedUser, removeUser } from "@/state/features/user/userSlice"
+import { addStore } from "@/state/features/store/storeSlice"
 
 const Layout = ({ children }: { children: ReactNode }) => {
   const supabaseClient = useSupabaseClient()
   const user = useUser()
+  const dispatch = useDispatch()
+
+  const {
+    loading,
+    error: userStateError,
+    authenticated,
+    user: userState,
+  } = useSelector((state: RootState) => state.user)
+
+  const { store, available } = useSelector((state: RootState) => state.store)
 
   const { data, isLoading, error } = useQuery([user?.id], getStore)
 
-  // console.log(data?.store)
+  // console.log("REDUXED LOAD: ", loading)
+  // console.log("REDUXED USER: ", userState)
+  // console.log("REDUXED USER: ", authenticated)
+  // console.log("REDUXED ERROR: ", user)
+
+  useEffect(() => {
+    if (!authenticated && user) {
+      dispatch(fetchedUser(user))
+    }
+
+    if (data?.store && !available) {
+      console.log("SAVE STORE REDUX")
+      dispatch(addStore(data.store))
+    }
+  }, [userState, user, store, data])
+
+  if (loading)
+    return (
+      <div className="flex w-full h-full items-center justify-center">
+        <h5>Loading...</h5>
+      </div>
+    )
 
   if (!user) return <AuthComponent />
 
   if (!isLoading && user && !error && !data?.store) {
+    // if (!data?.store) {
     Router.push("/store/new")
   }
 
-  const signout = () => supabaseClient.auth.signOut()
+  const signout = async () => {
+    supabaseClient.auth.signOut()
+    dispatch(removeUser())
+    // Router.reload()
+  }
+
+  // console.log("REDUXED LOAD: ", data?.store)
+  // console.log("REDUXED USER: ", available)
+  // console.log("REDUXED USER: ", authenticated)
+  // console.log("REDUXED ERROR: ", userStateError)
 
   return (
     <div className="relative flex flex-row w-full px-12 bg-neutral-50 ">
       <NavbarComponent signout={signout} user={user} />
-      <Sidebar store={data?.store} />
+      {/* <Sidebar store={data?.store} /> */}
+      <Sidebar store={store} />
       <div className="w-1/4 h-screen" />
       <div className="flex flex-col flex-1 mt-16 ">{children}</div>
     </div>

@@ -6,7 +6,11 @@ import {
 
 import { useUser, useSupabaseClient } from "@supabase/auth-helpers-react"
 
-const AuthComponent = () => {
+type Props = {
+  route?: any
+}
+
+const AuthComponent = ({ route }: Props) => {
   const supabaseClient = useSupabaseClient()
   return (
     <div className="flex flex-row w-full h-screen">

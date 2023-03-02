@@ -17,6 +17,8 @@ import { getStore } from "../../lib/database"
 import { useUser } from "@supabase/auth-helpers-react"
 import Image from "next/image"
 import Link from "next/link"
+import sol from "../../public/solana.png"
+import usdc from "../../public/usdc.png"
 
 const Dashboard = () => {
   const user = useUser()
@@ -53,17 +55,15 @@ const Dashboard = () => {
             {/*  */}
 
             {!isLoading && !error && (
-              <Link
-                href={{
-                  pathname: "/terminal",
-                  query: {
-                    s: data?.store.slug,
-                  },
-                }}
-                className="flex flex-row items-center h-10 px-4 text-white bg-black rounded-full"
-              >
-                <BsCalculatorFill color="white" />
-                <h1 className="mx-3 text-sm font-medium">Start Terminal</h1>
+              <Link href="/terminal" legacyBehavior>
+                <a
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-row items-center h-10 px-4 text-white bg-black rounded-full"
+                >
+                  <BsCalculatorFill color="white" />
+                  <h1 className="mx-3 text-sm font-medium">Start Terminal</h1>
+                </a>
               </Link>
             )}
           </div>
@@ -92,21 +92,20 @@ const Dashboard = () => {
             {/*  */}
 
             <div className="flex flex-row items-center">
-              <div className="w-4 h-4 mr-2 bg-purple-700 rounded-sm"></div>
+              <div className="w-5 h-5 mr-2 overflow-hidden rounded-sm relative">
+                <Image src={sol} alt="solana logo" fill />
+              </div>
               <h1>$0 SOL</h1>
             </div>
 
-            {/*  */}
             <div className="flex flex-row items-center">
-              <div className="w-4 h-4 mr-2 bg-green-400 rounded-sm"></div>
-              <h1>$0 USDT</h1>
+              <div className="w-5 h-5 mr-2 overflow-hidden rounded-sm relative">
+                <Image src={usdc} alt="solana logo" fill />
+              </div>
+              <h1>$0 USDC</h1>
             </div>
 
             {/*  */}
-            <div className="flex flex-row items-center">
-              <div className="w-4 h-4 mr-2 bg-blue-500 rounded-sm"></div>
-              <h1>$0 USDC</h1>
-            </div>
           </div>
         </div>
         {/*  */}

@@ -1,65 +1,51 @@
-import {
-  createQR,
-  encodeURL,
-  TransferRequestURLFields,
-  findReference,
-  validateTransfer,
-  FindReferenceError,
-  ValidateTransferError,
-} from "@solana/pay"
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base"
-import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js"
-import { useEffect, useMemo, useRef, useState } from "react"
-import { Keypair } from "@solana/web3.js"
-import { useRouter } from "next/router"
-import { shopAddress, usdcAddress } from "../../../lib/addresses"
-import calculatePrice from "../../../lib/calculatePrice"
+import { createQR } from "@solana/pay"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 
 import logo from "../../../public/paynapple-lg.png"
 import Confirmed from "../Confirmed"
 import { updateStoreTotalBalance } from "@/lib/database"
 import { useMutation } from "react-query"
+import useCreatePayQR from "@/hooks/useCreatePayQR"
 
 type Props = {
   closeModal: any
   price: any
   address: String
   slug: String
+  activeToken: any
   name: String
+  total: any
 }
 
-const PayModal = ({ closeModal, name, address, price, slug }: Props) => {
+const PayModal = ({
+  closeModal,
+  name,
+  address,
+  total,
+  activeToken,
+  price,
+  slug,
+}: Props) => {
   const [showQR, setShowQR] = useState(false)
   const [done, setDone] = useState(false)
 
-  // Get a connection to Solana devnet
-  const network = WalletAdapterNetwork.Devnet
-  const endpoint = clusterApiUrl(network)
-  const connection = new Connection(endpoint)
+  const successFunction = () => {
+    setDone(true)
 
-  // ref to a div where we'll show the QR code
-  const qrRef = useRef<HTMLDivElement>(null)
-
-  const amount = useMemo(() => calculatePrice(price), [price])
-
-  const splToken = new PublicKey(usdcAddress)
-
-  // Unique address that we can listen for payments to
-  const reference = useMemo(() => Keypair.generate().publicKey, [])
-
-  // Solana Pay transfer params
-  const urlParams: TransferRequestURLFields = {
-    recipient: shopAddress,
-    splToken,
-    amount,
-    reference,
-    label: `Payment for ${name}`,
-    message: "Thanks for your order! 🍪",
+    mutation.mutate({
+      amount: total,
+      slug,
+    })
   }
 
-  // Encode the params into the format shown
-  const url = encodeURL(urlParams)
+  const { qrRef, url, amount } = useCreatePayQR(
+    price,
+    name,
+    activeToken,
+    successFunction,
+    "0xShopAddress"
+  )
 
   // Show the QR code
   useEffect(() => {
@@ -73,61 +59,13 @@ const PayModal = ({ closeModal, name, address, price, slug }: Props) => {
   const mutation = useMutation(updateStoreTotalBalance, {
     onSuccess: () => {
       console.log("SUCCESS")
-      // setDone(false)
     },
-    onError(error, variables, context) {
+    onError(error) {
       console.log(error)
-      // setDone(false)
     },
   })
 
-  /* Add a new useEffect to detect payment */
-  // Check every 0.5s if the transaction is completed
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        // Check if there is any transaction for the reference
-        const signatureInfo = await findReference(connection, reference, {
-          finality: "confirmed",
-        })
-        // Validate that the transaction has the expected recipient, amount and SPL token
-        await validateTransfer(
-          connection,
-          signatureInfo.signature,
-          {
-            recipient: shopAddress,
-            amount,
-            splToken: usdcAddress,
-            reference,
-          },
-          { commitment: "confirmed" }
-        )
-
-        setDone(true)
-
-        mutation.mutate({
-          amount,
-          slug,
-        })
-
-        return
-      } catch (e) {
-        if (e instanceof FindReferenceError) {
-          // No transaction found yet, ignore this error
-          return
-        }
-        if (e instanceof ValidateTransferError) {
-          // Transaction is invalid
-          console.error("Transaction is invalid", e)
-          return
-        }
-        console.error("Unknown error", e)
-      }
-    }, 500)
-    return () => {
-      clearInterval(interval)
-    }
-  }, [amount])
+  // console.log("TOTAL: ", total)
 
   return (
     <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -173,8 +111,12 @@ const PayModal = ({ closeModal, name, address, price, slug }: Props) => {
                   <div className="flex  flex-col items-center justify-center">
                     <h1 className="text-2xl font-medium mb-3">Pay</h1>
                     <h1 className="text-4xl my-4 font-semibold text-purple-300">
-                      ${amount.toString()}{" "}
-                      <span className="font-extralight">SOL</span>
+                      {activeToken === "USDC" ? (
+                        <>${amount.toString()} </>
+                      ) : (
+                        <>{amount.toString()} </>
+                      )}
+                      <span className="font-extralight">{activeToken}</span>
                     </h1>
 
                     <h3 className="text-lg my-3">To Address</h3>
