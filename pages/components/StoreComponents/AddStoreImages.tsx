@@ -1,7 +1,9 @@
 import { createStore } from "@/lib/database"
+import { addStore } from "@/state/features/store/storeSlice"
 import Router from "next/router"
 import { useState } from "react"
 import { useMutation } from "react-query"
+import { useDispatch } from "react-redux"
 
 type Props = {
   store: any
@@ -14,8 +16,11 @@ const AddStoreImages = ({ setStore, store, setProgress }: Props) => {
   const [picture, setPicture] = useState<string>("store_picture.url")
   const [cover, setCover] = useState<string>("store_cover.url")
 
+  const dispatch = useDispatch()
+
   const mutation = useMutation(createStore, {
-    onSuccess: () => {
+    onSuccess: (data: any) => {
+      dispatch(addStore(data[0]))
       Router.push("/dashboard")
     },
   })

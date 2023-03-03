@@ -28,7 +28,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   const { data, isLoading, error } = useQuery([user?.id], getStore)
 
-  // console.log("REDUXED LOAD: ", loading)
+  // console.log("REDUXED LOAD: ", data)
   // console.log("REDUXED USER: ", userState)
   // console.log("REDUXED USER: ", authenticated)
   // console.log("REDUXED ERROR: ", user)
@@ -39,7 +39,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
     }
 
     if (data?.store && !available) {
-      console.log("SAVE STORE REDUX")
       dispatch(addStore(data.store))
     }
   }, [userState, user, store, data])
@@ -53,7 +52,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   if (!user) return <AuthComponent />
 
-  if (!isLoading && user && !error && !data?.store) {
+  if (!data?.store && !isLoading && !error) {
     // if (!data?.store) {
     Router.push("/store/new")
   }

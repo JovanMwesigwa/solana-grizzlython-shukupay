@@ -7,16 +7,19 @@ import Link from "next/link"
 import { useQuery } from "react-query"
 import { useUser } from "@supabase/auth-helpers-react"
 import { getProducts, getStore } from "@/lib/database"
+import { useSelector } from "react-redux"
+import { RootState } from "@/state/store"
 
 const Products = () => {
-  const user = useUser()
-
-  const { data: store } = useQuery([user?.id], getStore)
+  const { store } = useSelector((state: RootState) => state.store)
 
   const { data, isLoading, error } = useQuery(
-    ["storeID", store?.store.id],
+    ["storeID", store.id],
     getProducts
   )
+
+  // console.log("DEBUG HERE: ", store)
+  // console.log("DEBUG PRODUCTS: ", data?.data)
 
   return (
     <Layout>
@@ -67,7 +70,7 @@ const Products = () => {
             <ProductCard
               key={item.id}
               item={item}
-              route={`/pay?s=${store?.store.slug}&p=${item.id}`}
+              route={`/pay?s=${store?.slug}&p=${item.id}`}
             />
           ))}
         </>

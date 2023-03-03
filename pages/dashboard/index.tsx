@@ -13,18 +13,28 @@ import {
 } from "react-query"
 import Layout from "../components/Layout"
 import { useEffect, useState } from "react"
-import { getStore } from "../../lib/database"
+import { getStore, getStoreBalance, getStoreFromID } from "../../lib/database"
 import { useUser } from "@supabase/auth-helpers-react"
 import Image from "next/image"
 import Link from "next/link"
 import sol from "../../public/solana.png"
 import usdc from "../../public/usdc.png"
+import { useSelector } from "react-redux"
+import { RootState } from "@/state/store"
+import Router from "next/router"
 
 const Dashboard = () => {
   const user = useUser()
 
-  const { data, isLoading, error } = useQuery([user?.id], getStore)
-  // console.log(data)
+  const { error, loading, store, available } = useSelector(
+    (state: RootState) => state.store
+  )
+
+  const {
+    data,
+    isLoading,
+    error: storeError,
+  } = useQuery([store.id], getStoreFromID)
 
   return (
     <Layout>
@@ -87,7 +97,7 @@ const Dashboard = () => {
 
             {/*  */}
           </div>
-          <h1 className="text-6xl font-bold ">${data?.store.total}</h1>
+          <h1 className="text-6xl font-bold ">${data?.total}</h1>
           <div className="flex flex-row items-center w-full mt-5 justify-evenly">
             {/*  */}
 
@@ -136,25 +146,35 @@ const Dashboard = () => {
           </div>
 
           <div className="flex flex-col justify-between w-full h-full p-10 mx-4 bg-white rounded-md shadow-sm cursor-pointer">
-            <FcPlus size={35} />
+            <FcKindle size={35} />
 
-            <h4 className="">Connect to Other POS</h4>
+            <h4 className="">Run own POS Terminal</h4>
 
             <p className="text-sm font-extralight text-neutral-400">
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Optio
             </p>
             {/*  */}
 
-            <div className="flex flex-row items-center ">
-              <h1 className="mr-1">Set up</h1>
-              <IoIosArrowForward />
-            </div>
+            <Link
+              className="flex flex-row items-center"
+              href="/terminal"
+              legacyBehavior
+            >
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex flex-row items-center  "
+              >
+                <h1 className="mr-1">Start</h1>
+                <IoIosArrowForward />
+              </a>
+            </Link>
           </div>
 
           <div className="flex flex-col justify-between w-full h-full p-10 bg-white rounded-md shadow-sm cursor-pointer">
-            <FcKindle size={35} />
+            <FcPlus size={35} />
 
-            <h4 className="">Run own POS Terminal</h4>
+            <h4 className="">Connect to Other POS</h4>
 
             <p className="text-sm font-extralight text-neutral-400">
               Lorem ipsum dolor, sit amet consectetur adipisicing elit. Optio

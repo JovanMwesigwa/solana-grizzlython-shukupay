@@ -9,10 +9,14 @@ import { useState } from "react"
 import { useMutation, useQuery } from "react-query"
 import { createProduct, getStore } from "@/lib/database"
 import { Router, useRouter } from "next/router"
+import { useSelector } from "react-redux"
+import { RootState } from "@/state/store"
 
 const AddProduct = () => {
   const user = useUser()
   const router = useRouter()
+
+  const { store } = useSelector((state: RootState) => state.store)
 
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
@@ -20,10 +24,8 @@ const AddProduct = () => {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
 
-  const { data, isLoading, error: storeError } = useQuery([user?.id], getStore)
-
   const mutation = useMutation(createProduct, {
-    onSuccess: () => {
+    onSuccess: (data) => {
       // Router.push("/dashboard")
       setError("")
       setTitle("")
@@ -46,7 +48,7 @@ const AddProduct = () => {
       description,
       price,
       slug: title,
-      store: data?.store.id,
+      store: store?.id,
     })
   }
 
@@ -64,7 +66,7 @@ const AddProduct = () => {
           className="flex flex-row items-center p-2 px-4 cursor-pointer text-base font-medium rounded-full bg-neutral-200"
         >
           <AiOutlineArrowLeft size={20} />
-          <h1 className="ml-3">Dashboard</h1>
+          <h1 className="ml-3 mx-4">Back</h1>
         </div>
         {error && (
           <div className="flex absolute top-12 left-1/3 bg-red-200 px-5 border-2 text-red-600 font-medium border-red-400 rounded-md ">
