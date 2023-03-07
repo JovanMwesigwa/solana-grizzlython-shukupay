@@ -39,6 +39,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
     }
 
     if (data?.store && !available) {
+      // console.log("STORE AVAILABLE: ", data)
       dispatch(addStore(data.store))
     }
   }, [userState, user, store, data])

@@ -7,6 +7,7 @@ import Confirmed from "../Confirmed"
 import { updateStoreTotalBalance } from "@/lib/database"
 import { useMutation } from "react-query"
 import useCreatePayQR from "@/hooks/useCreatePayQR"
+import useCreateSquarePayment from "@/hooks/useCreatePayment"
 
 type Props = {
   closeModal: any
@@ -16,19 +17,27 @@ type Props = {
   activeToken: any
   name: String
   total: any
+  store: any
+  square: any
 }
 
 const PayModal = ({
   closeModal,
   name,
+  square,
   address,
   total,
+  store,
   activeToken,
   price,
   slug,
 }: Props) => {
   const [showQR, setShowQR] = useState(false)
   const [done, setDone] = useState(false)
+
+  const { request, payment, paymentError } = useCreateSquarePayment(
+    square.access_token
+  )
 
   const successFunction = () => {
     setDone(true)
@@ -44,7 +53,7 @@ const PayModal = ({
     name,
     activeToken,
     successFunction,
-    "0xShopAddress"
+    store.solana_address
   )
 
   // Show the QR code
@@ -57,8 +66,9 @@ const PayModal = ({
   })
 
   const mutation = useMutation(updateStoreTotalBalance, {
-    onSuccess: () => {
+    onSuccess: async () => {
       console.log("SUCCESS")
+      await request(total, "user@gmail.com", "SOL Terminal Payment")
     },
     onError(error) {
       console.log(error)

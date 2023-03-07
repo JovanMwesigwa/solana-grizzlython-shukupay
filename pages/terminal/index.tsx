@@ -4,16 +4,13 @@ import { RiDeleteBack2Line } from "react-icons/ri"
 import logo from "../../public/paynapple-lg.png"
 import { useState } from "react"
 import PayModal from "../components/ModalComponents/PayModal"
-import { useRouter } from "next/router"
 import { useMutation, useQuery } from "react-query"
-import {
-  getStore,
-  getStoreFromSlug,
-  updateStoreTotalBalance,
-} from "@/lib/database"
+import { getSquareCreds, getStore } from "@/lib/database"
 import { useUser } from "@supabase/auth-helpers-react"
 import usdc from "../../public/usdc.png"
 import sol from "../../public/solana.png"
+import { useSelector } from "react-redux"
+import { RootState } from "@/state/store"
 
 const Terminal = () => {
   const [price, setPrice] = useState<any>(null)
@@ -22,6 +19,14 @@ const Terminal = () => {
   const [activeToken, setActiveToken] = useState("USDC")
 
   const user = useUser()
+
+  // const { store, loading } = useSelector((state: RootState) => state.store)
+
+  const {
+    data: store,
+    isLoading: storeLoading,
+    error: storeError,
+  } = useQuery([user?.id], getStore)
 
   const updatePrice = (num: string) => {
     let newPrice
@@ -62,7 +67,9 @@ const Terminal = () => {
     setIsOpen(false)
   }
 
-  // console.log("DEBUG: ", data?.store)
+  const { data: square } = useQuery([store?.store.id], getSquareCreds)
+
+  // console.log("DEBUG: ", square)
 
   return (
     <div className="w-full bg-gray-900 h-screen flex flex-1 items-center justify-center">
@@ -70,6 +77,8 @@ const Terminal = () => {
         <PayModal
           address={data?.store.solana_address}
           price={Number(price)}
+          square={square}
+          store={store?.store}
           total={totalPrice}
           closeModal={closeModal}
           slug={data?.store.slug}

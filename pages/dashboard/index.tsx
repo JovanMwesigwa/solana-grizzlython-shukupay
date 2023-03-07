@@ -13,7 +13,12 @@ import {
 } from "react-query"
 import Layout from "../components/Layout"
 import { useEffect, useState } from "react"
-import { getStore, getStoreBalance, getStoreFromID } from "../../lib/database"
+import {
+  getSquareCreds,
+  getStore,
+  getStoreBalance,
+  getStoreFromID,
+} from "../../lib/database"
 import { useUser } from "@supabase/auth-helpers-react"
 import Image from "next/image"
 import Link from "next/link"
@@ -35,6 +40,14 @@ const Dashboard = () => {
     isLoading,
     error: storeError,
   } = useQuery([store.id], getStoreFromID)
+
+  // const {
+  //   data: squareData,
+  //   isLoading: squareCredsLoading,
+  //   error: squareCredsError,
+  // } = useQuery([store.id], getSquareCreds)
+
+  // console.log("TEST DEBUG HERE: ", store)
 
   return (
     <Layout>
@@ -102,14 +115,14 @@ const Dashboard = () => {
             {/*  */}
 
             <div className="flex flex-row items-center">
-              <div className="w-5 h-5 mr-2 overflow-hidden rounded-sm relative">
+              <div className="relative w-5 h-5 mr-2 overflow-hidden rounded-sm">
                 <Image src={sol} alt="solana logo" fill />
               </div>
               <h1>$0 SOL</h1>
             </div>
 
             <div className="flex flex-row items-center">
-              <div className="w-5 h-5 mr-2 overflow-hidden rounded-sm relative">
+              <div className="relative w-5 h-5 mr-2 overflow-hidden rounded-sm">
                 <Image src={usdc} alt="solana logo" fill />
               </div>
               <h1>$0 USDC</h1>
@@ -139,10 +152,24 @@ const Dashboard = () => {
             </p>
             {/*  */}
 
-            <div className="flex flex-row items-center ">
+            <Link href="/authorize" className="flex flex-row items-center ">
               <h1 className="mr-1">Set up</h1>
               <IoIosArrowForward />
-            </div>
+            </Link>
+
+            <>
+              {/* {!squareCredsLoading && !squareCredsError ? ( */}
+              {/* <div className="flex flex-row cursor-text items-center "> */}
+              {/* <h1 className="mr-1">Connected</h1> */}
+              {/* <IoIosArrowForward /> */}
+              {/* </div> */}
+              {/* ) : ( */}
+              {/* <Link href="/authorize" className="flex flex-row items-center "> */}
+              {/* <h1 className="mr-1">Set up</h1> */}
+              {/* <IoIosArrowForward /> */}
+              {/* </Link> */}
+              {/* )} */}
+            </>
           </div>
 
           <div className="flex flex-col justify-between w-full h-full p-10 mx-4 bg-white rounded-md shadow-sm cursor-pointer">
@@ -163,7 +190,7 @@ const Dashboard = () => {
               <a
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex flex-row items-center  "
+                className="flex flex-row items-center "
               >
                 <h1 className="mr-1">Start</h1>
                 <IoIosArrowForward />
