@@ -27,8 +27,12 @@ import usdc from "../../public/usdc.png"
 import { useSelector } from "react-redux"
 import { RootState } from "@/state/store"
 import Router from "next/router"
+import useCreateSquarePayment from "@/hooks/useCreatePayment"
+import usePaySquare from "@/hooks/usePaySquare"
 
 const Dashboard = () => {
+  const [notification, setNotification] = useState(null)
+
   const user = useUser()
 
   const { error, loading, store, available } = useSelector(
@@ -41,13 +45,50 @@ const Dashboard = () => {
     error: storeError,
   } = useQuery([store.id], getStoreFromID)
 
+  // useEffect(() => {
+  //   handleTriggerNotification()
+  // }, [data?.total])
+
+  // const handleTriggerNotification = () => {
+  //   if ("Notification" in window && Notification.permission === "granted") {
+  //     const newNotification = new Notification("New Terminal Payment Recieved!")
+  //     // setNotification(newNotification);
+  //     const audio = new Audio("../../public/sound.mp3")
+  //     audio.play()
+  //   } else if (
+  //     "Notification" in window &&
+  //     Notification.permission !== "denied"
+  //   ) {
+  //     Notification.requestPermission().then((permission) => {
+  //       if (permission === "granted") {
+  //         const newNotification = new Notification(
+  //           "New Terminal Payment Recieved!"
+  //         )
+  //         const audio = new Audio("../../public/sound.mp3")
+  //         audio.play()
+  //         // setNotification(newNotification);
+  //       }
+  //     })
+  //   }
+  // }
+
+  // const { data: square } = useQuery([store?.store.id], getSquareCreds)
+
+  // const { request, payment, paymentError } = useCreateSquarePayment(
+  //   square.access_token
+  // )
+
+  // const { request: requestFunc } = usePaySquare(square.access_token)
+
   // const {
   //   data: squareData,
   //   isLoading: squareCredsLoading,
   //   error: squareCredsError,
   // } = useQuery([store.id], getSquareCreds)
 
-  // console.log("TEST DEBUG HERE: ", store)
+  // console.log("TEST DEBUG HERE: ", square)
+
+  // useEff
 
   return (
     <Layout>
@@ -76,6 +117,8 @@ const Dashboard = () => {
               </div>
             </div>
             {/*  */}
+
+            {/* <button onClick={handleTriggerNotification}>NOTIF</button> */}
 
             {!isLoading && !error && (
               <Link href="/terminal" legacyBehavior>
@@ -138,6 +181,7 @@ const Dashboard = () => {
           <h1 className="mx-3 text-lg font-medium">More ways to get paid</h1>
         </div>
 
+        {/* <button onClick={() => requestFunc(20)}>Create square payment</button> */}
         {/*  */}
         <div className="flex flex-row items-center justify-between w-full h-64">
           {/*  */}
@@ -159,7 +203,7 @@ const Dashboard = () => {
 
             <>
               {/* {!squareCredsLoading && !squareCredsError ? ( */}
-              {/* <div className="flex flex-row cursor-text items-center "> */}
+              {/* <div className="flex flex-row items-center cursor-text "> */}
               {/* <h1 className="mr-1">Connected</h1> */}
               {/* <IoIosArrowForward /> */}
               {/* </div> */}

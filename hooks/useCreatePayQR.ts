@@ -1,18 +1,29 @@
 import { shopAddress, usdcAddress } from "@/lib/addresses"
 import calculatePrice from "@/lib/calculatePrice"
-import { FindReferenceError, ValidateTransferError, encodeURL, findReference, validateTransfer } from "@solana/pay"
+import {
+  FindReferenceError,
+  ValidateTransferError,
+  encodeURL,
+  findReference,
+  validateTransfer,
+} from "@solana/pay"
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base"
 import { Connection, Keypair, PublicKey, clusterApiUrl } from "@solana/web3.js"
 import { useEffect, useMemo, useRef, useState } from "react"
 
-
-const useCreatePayQR = (price: any, name: String, activeToken: any, successFunction: any, storeAddress: any) => {
-
+const useCreatePayQR = (
+  price: any,
+  name: String,
+  activeToken: any,
+  successFunction: any,
+  storeAddress: any,
+  done: boolean,
+  setDone: any
+) => {
   // Get a connection to Solana devnet
   const network = WalletAdapterNetwork.Devnet
   const endpoint = clusterApiUrl(network)
   const connection = new Connection(endpoint)
-
 
   // ref to a div where we'll show the QR code
   const qrRef = useRef<HTMLDivElement>(null)
@@ -48,26 +59,38 @@ const useCreatePayQR = (price: any, name: String, activeToken: any, successFunct
   useEffect(() => {
     const interval = setInterval(async () => {
       try {
-        // Check if there is any transaction for the reference
-        const signatureInfo = await findReference(connection, reference, {
-          finality: "confirmed",
-        })
-        // Validate that the transaction has the expected recipient, amount and SPL token
-        await validateTransfer(
-          connection,
-          signatureInfo.signature,
-          {
-            recipient: shopAddress,
-            amount,
-            splToken: usdcAddress,
-            reference,
-          },
-          { commitment: "confirmed" }
-        )
+        if (!done) {
+          // Check if there is any transaction for the reference
+          const signatureInfo = await findReference(connection, reference, {
+            finality: "confirmed",
+          })
+          // Validate that the transaction has the expected recipient, amount and SPL token
+          const result = await validateTransfer(
+            connection,
+            signatureInfo.signature,
+            {
+              recipient: shopAddress,
+              amount,
+              splToken: usdcAddress,
+              reference,
+            },
+            { commitment: "confirmed" }
+          )
 
-        successFunction()
+          await successFunction()
 
-        return
+          // if (!result.transaction.signatures[0]) {
+          //   console.log("DEBUG VALIDATED: ", result.transaction.signatures[0])
+
+          //   setDone(true)
+          // } else {
+          //   setDone(false)
+          // }
+
+          return
+        } else {
+          return
+        }
       } catch (e) {
         if (e instanceof FindReferenceError) {
           // No transaction found yet, ignore this error
@@ -91,7 +114,7 @@ const useCreatePayQR = (price: any, name: String, activeToken: any, successFunct
     qrRef,
     amount,
     reference,
-    url
+    url,
   }
 }
 

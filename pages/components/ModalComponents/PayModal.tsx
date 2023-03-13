@@ -34,18 +34,23 @@ const PayModal = ({
 }: Props) => {
   const [showQR, setShowQR] = useState(false)
   const [done, setDone] = useState(false)
+  const [paid, setPaid] = useState(false)
 
   const { request, payment, paymentError } = useCreateSquarePayment(
-    square.access_token
+    square?.access_token
   )
 
   const successFunction = () => {
+    //
     setDone(true)
 
-    mutation.mutate({
-      amount: total,
-      slug,
-    })
+    if (!paid && !done) {
+      mutation.mutate({
+        amount: price,
+        slug,
+        total: Number(total),
+      })
+    }
   }
 
   const { qrRef, url, amount } = useCreatePayQR(
@@ -53,32 +58,40 @@ const PayModal = ({
     name,
     activeToken,
     successFunction,
-    store.solana_address
+    store.solana_address,
+    done,
+    setDone
   )
 
   // Show the QR code
   useEffect(() => {
-    const qr = createQR(url, 512)
-    if (qrRef.current && amount.isGreaterThan(0)) {
-      qrRef.current.innerHTML = ""
-      qr.append(qrRef.current)
+    if (!done) {
+      const qr = createQR(url, 512)
+      if (qrRef.current && amount.isGreaterThan(0)) {
+        qrRef.current.innerHTML = ""
+        qr.append(qrRef.current)
+      }
     }
   })
 
   const mutation = useMutation(updateStoreTotalBalance, {
     onSuccess: async () => {
       console.log("SUCCESS")
-      await request(total, "user@gmail.com", "SOL Terminal Payment")
+      await request(price, "user@gmail.com", "SOL Terminal Payment")
+      // setDone(false)
+      setPaid(false)
     },
     onError(error) {
       console.log(error)
+      // setDone(false)
+      setPaid(false)
     },
   })
 
-  // console.log("TOTAL: ", total)
+  // console.log("TOTAL: ", square)
 
   return (
-    <div className="fixed z-10 inset-0 overflow-y-auto">
+    <div className="fixed inset-0 z-10 overflow-y-auto">
       <div className="flex items-center justify-center h-screen px-4 text-center sm:block sm:p-0">
         {/* Background overlay */}
         <div
@@ -101,7 +114,7 @@ const PayModal = ({
           aria-labelledby="modal-headline"
         >
           {done ? (
-            <Confirmed />
+            <Confirmed setPaid={setPaid} />
           ) : (
             <>
               {showQR ? (
@@ -109,18 +122,18 @@ const PayModal = ({
                   <div ref={qrRef} />
                 </div>
               ) : (
-                <div className="flex flex-col h-full justify-between p-5 w-full items-center ">
+                <div className="flex flex-col items-center justify-between w-full h-full p-5 ">
                   {/*  */}
                   <div className="flex flex-row items-center">
-                    <div className="w-12 h-12 relative rounded-full">
+                    <div className="relative w-12 h-12 rounded-full">
                       <Image src={logo} alt="paynapple logo" fill />
                     </div>
                     <h1>Order total</h1>
                   </div>
 
-                  <div className="flex  flex-col items-center justify-center">
-                    <h1 className="text-2xl font-medium mb-3">Pay</h1>
-                    <h1 className="text-4xl my-4 font-semibold text-purple-300">
+                  <div className="flex flex-col items-center justify-center">
+                    <h1 className="mb-3 text-2xl font-medium">Pay</h1>
+                    <h1 className="my-4 text-4xl font-semibold text-purple-300">
                       {activeToken === "USDC" ? (
                         <>${amount.toString()} </>
                       ) : (
@@ -129,9 +142,9 @@ const PayModal = ({
                       <span className="font-extralight">{activeToken}</span>
                     </h1>
 
-                    <h3 className="text-lg my-3">To Address</h3>
+                    <h3 className="my-3 text-lg">To Address</h3>
 
-                    <p className="cursor-pointer text-sm text-gray-300">
+                    <p className="text-sm text-gray-300 cursor-pointer">
                       {address}
                     </p>
                   </div>
@@ -139,13 +152,13 @@ const PayModal = ({
                   <div className="flex flex-col items-center w-full px-12 ">
                     <button
                       onClick={() => setShowQR(true)}
-                      className="bg-yellow-400 p-3 w-full text-black font-semibold rounded-md"
+                      className="w-full p-3 font-semibold text-black bg-yellow-400 rounded-md"
                     >
                       Open QR
                     </button>
                     <button
                       onClick={closeModal}
-                      className="w-full p-3  mt-5 text-red-400"
+                      className="w-full p-3 mt-5 text-red-400"
                     >
                       Cancel
                     </button>

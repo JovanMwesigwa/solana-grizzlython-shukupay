@@ -69,29 +69,29 @@ const Terminal = () => {
 
   const { data: square } = useQuery([store?.store.id], getSquareCreds)
 
-  // console.log("DEBUG: ", square)
+  // console.log("DEBUG: ", square.access_token)
 
   return (
-    <div className="w-full bg-gray-900 h-screen flex flex-1 items-center justify-center">
+    <div className="flex items-center justify-center flex-1 w-full h-screen bg-gray-900">
       {isOpen && !isLoading && !error && Number(price) > 0 && (
         <PayModal
           address={data?.store.solana_address}
           price={Number(price)}
           square={square}
           store={store?.store}
-          total={totalPrice}
+          total={data?.store.total}
           closeModal={closeModal}
           slug={data?.store.slug}
           name={data?.store.name}
           activeToken={activeToken}
         />
       )}
-      <div className="h-16 w-16 rounded-full absolute top-3 left-3">
+      <div className="absolute w-16 h-16 rounded-full top-3 left-3">
         <Image src={logo} fill alt="paynapple logo" />
       </div>
-      <div className="text-white w-1/2 h-full flex flex-col">
-        <div className=" flex flex-col justify-center flex-grow p-4">
-          <div className="flex w-full flex-row items-center">
+      <div className="flex flex-col w-1/2 h-full text-white">
+        <div className="flex flex-col justify-center flex-grow p-4 ">
+          <div className="flex flex-row items-center w-full">
             {activeToken != "USDC" ? (
               <button
                 onClick={() => setActiveToken("USDC")}
@@ -107,12 +107,12 @@ const Terminal = () => {
                 <Image src={usdc} alt="usdc logo" fill />
               </button>
             )}
-            <span className="text-lg text-gray-500 font-medium">
+            <span className="text-lg font-medium text-gray-500">
               {activeToken}
             </span>
           </div>
 
-          <div className="my-5 bg-gray-800 rounded-lg p-4 flex justify-between items-center">
+          <div className="flex items-center justify-between p-4 my-5 bg-gray-800 rounded-lg">
             <div className="text-lg font-light text-gray-600">
               Paynapple POS
             </div>
@@ -127,70 +127,70 @@ const Terminal = () => {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-3 gap-2 ">
+          <div className="grid grid-cols-3 gap-2 mt-4 ">
             <button
               onClick={() => updatePrice("1")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               1
             </button>
             <button
               onClick={() => updatePrice("2")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               2
             </button>
             <button
               onClick={() => updatePrice("3")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               3
             </button>
             <button
               onClick={() => updatePrice("4")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               4
             </button>
             <button
               onClick={() => updatePrice("5")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               5
             </button>
             <button
               onClick={() => updatePrice("6")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               6
             </button>
             <button
               onClick={() => updatePrice("7")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               7
             </button>
             <button
               onClick={() => updatePrice("8")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               8
             </button>
             <button
               onClick={() => updatePrice("9")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               9
             </button>
             <button
               onClick={() => updatePrice("00")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               00
             </button>
             <button
               onClick={() => updatePrice("0")}
-              className="bg-gray-700 text-white rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="p-4 text-2xl font-bold text-white bg-gray-700 rounded-lg hover:bg-gray-600"
             >
               0
             </button>
@@ -208,13 +208,13 @@ const Terminal = () => {
                 setPrice("0.00")
                 setHasPoint(false)
               }}
-              className="bg-pink-400 text-white flex items-center justify-center rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="flex items-center justify-center p-4 text-2xl font-bold text-white bg-pink-400 rounded-lg hover:bg-gray-600"
             >
               <AiOutlineCloseCircle size={30} />
             </button>
             <button
               onClick={deleteLast}
-              className="bg-yellow-400 text-white flex items-center justify-center rounded-lg p-4 text-2xl font-bold hover:bg-gray-600"
+              className="flex items-center justify-center p-4 text-2xl font-bold text-white bg-yellow-400 rounded-lg hover:bg-gray-600"
             >
               <RiDeleteBack2Line size={30} />
             </button>
