@@ -2,6 +2,7 @@ import { BsCalculatorFill, BsFillCheckCircleFill } from "react-icons/bs"
 import { FcPlus } from "react-icons/fc"
 import { IoIosArrowForward } from "react-icons/io"
 import { FcFrame } from "react-icons/fc"
+import { SiSquare } from "react-icons/si"
 import { FcKindle } from "react-icons/fc"
 import { HiOutlineLightBulb } from "react-icons/hi"
 import {
@@ -29,9 +30,10 @@ import { RootState } from "@/state/store"
 import Router from "next/router"
 import useCreateSquarePayment from "@/hooks/useCreatePayment"
 import usePaySquare from "@/hooks/usePaySquare"
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai"
 
 const Dashboard = () => {
-  const [balance, setBalance] = useState<number | null>(0)
+  const [showBalance, setShowBalance] = useState<boolean>(true)
 
   const user = useUser()
 
@@ -152,7 +154,34 @@ const Dashboard = () => {
 
             {/*  */}
           </div>
-          {!loading && <h1 className="text-6xl font-bold ">${store.total}</h1>}
+
+          {!loading && (
+            <div className="flex flex-row items-center ">
+              {showBalance ? (
+                <h1 className="mr-5 text-6xl font-bold">***</h1>
+              ) : (
+                <h1 className="mr-5 text-6xl font-bold">${store.total}</h1>
+              )}
+              <div className="">
+                {showBalance ? (
+                  <div
+                    onClick={() => setShowBalance(false)}
+                    className="cursor-pointer"
+                  >
+                    <AiFillEyeInvisible size={25} />
+                  </div>
+                ) : (
+                  <div
+                    // onClick={() => setShowBalance(true)}
+                    onClick={() => setShowBalance(true)}
+                    className="cursor-pointer"
+                  >
+                    <AiFillEye size={25} />
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
           <div className="flex flex-row items-center w-full mt-5 justify-evenly">
             {/*  */}
 
@@ -186,7 +215,7 @@ const Dashboard = () => {
           {/*  */}
 
           <div className="flex flex-col justify-between w-full h-full p-10 bg-white rounded-md shadow-sm cursor-pointer">
-            <FcFrame size={35} />
+            <SiSquare size={35} />
 
             <h4 className="">Connect Square POS</h4>
 

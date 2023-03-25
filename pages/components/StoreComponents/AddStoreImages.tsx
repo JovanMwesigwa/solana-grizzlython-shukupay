@@ -1,8 +1,9 @@
-import { createStore } from "@/lib/database"
+import { createStore, getStore } from "@/lib/database"
 import { addStore } from "@/state/features/store/storeSlice"
+import { useUser } from "@supabase/auth-helpers-react"
 import Router from "next/router"
 import { useState } from "react"
-import { useMutation } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import { useDispatch } from "react-redux"
 
 type Props = {
@@ -12,16 +13,21 @@ type Props = {
 }
 
 const AddStoreImages = ({ setStore, store, setProgress }: Props) => {
+  const user = useUser()
+
   const [error, setError] = useState<string>("")
   const [picture, setPicture] = useState<string>("store_picture.url")
   const [cover, setCover] = useState<string>("store_cover.url")
 
+  const { data, isLoading, error: storeError } = useQuery([user?.id], getStore)
+
   const dispatch = useDispatch()
 
   const mutation = useMutation(createStore, {
-    onSuccess: (data: any) => {
-      dispatch(addStore(data[0]))
+    onSettled: (data: any) => {
       Router.push("/dashboard")
+      dispatch(addStore(data[0]))
+      // Router.forward()
     },
   })
 
@@ -37,7 +43,14 @@ const AddStoreImages = ({ setStore, store, setProgress }: Props) => {
     }))
 
     mutation.mutate(store)
+
+    // goToDashboard()
   }
+
+  if (data?.store && !isLoading && !storeError) {
+    Router.push("/dashboard")
+  }
+
   return (
     <div className="flex flex-col justify-center flex-1 p-8">
       {mutation.isLoading ? (
@@ -69,6 +82,7 @@ const AddStoreImages = ({ setStore, store, setProgress }: Props) => {
             >
               Skip
             </button>
+            {/* <button onClick={goToDashboard}>GO</button> */}
           </div>
         </>
       )}

@@ -1,5 +1,9 @@
+import { getStore } from "@/lib/database"
 import { useUser } from "@supabase/auth-helpers-react"
+import Router from "next/router"
 import { useState } from "react"
+import { useQuery } from "react-query"
+import { useDispatch } from "react-redux"
 import slugify from "slugify"
 
 type Props = {
@@ -13,6 +17,8 @@ const AddStoreName = ({ setProgress, setStore }: Props) => {
   const [error, setError] = useState<string>("")
   const [name, setName] = useState<string>("")
   const [description, setDescription] = useState<string>("")
+
+  const { data, isLoading, error: storeError } = useQuery([user?.id], getStore)
 
   const submit = () => {
     if (!name || !description) {
@@ -29,6 +35,11 @@ const AddStoreName = ({ setProgress, setStore }: Props) => {
 
     setProgress("address")
   }
+
+  if (data?.store && !isLoading && !storeError) {
+    Router.push("/dashboard")
+  }
+
   return (
     <div className="flex flex-col justify-center flex-1 p-8">
       <div className="flex flex-col items-center justify-center flex-1">
