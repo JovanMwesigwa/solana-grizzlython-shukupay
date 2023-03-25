@@ -9,8 +9,9 @@ import { getSquareCreds, getStore } from "@/lib/database"
 import { useUser } from "@supabase/auth-helpers-react"
 import usdc from "../../public/usdc.png"
 import sol from "../../public/solana.png"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { RootState } from "@/state/store"
+import { updateStore } from "@/state/features/store/storeSlice"
 
 const Terminal = () => {
   const [price, setPrice] = useState<any>(null)
@@ -18,15 +19,21 @@ const Terminal = () => {
   const [totalPrice, setTotalPrice] = useState<any>(null)
   const [activeToken, setActiveToken] = useState("USDC")
 
+  const [updatedStore, setUpdatedStore] = useState<{}>({})
+
   const user = useUser()
 
   // const { store, loading } = useSelector((state: RootState) => state.store)
+
+  const dispatch = useDispatch()
 
   const {
     data: store,
     isLoading: storeLoading,
     error: storeError,
   } = useQuery([user?.id], getStore)
+
+  const { data: square } = useQuery([store?.store.id], getSquareCreds)
 
   const updatePrice = (num: string) => {
     let newPrice
@@ -61,15 +68,19 @@ const Terminal = () => {
     const overallPrice = totalPrice + Number(price)
     setTotalPrice(overallPrice)
     setIsOpen(true)
+
+    setUpdatedStore(data?.store)
   }
 
   const closeModal = () => {
     setIsOpen(false)
   }
 
-  const { data: square } = useQuery([store?.store.id], getSquareCreds)
+  // console.log("DEBUG: ", data)
 
-  // console.log("DEBUG: ", square.access_token)
+  const updateStoreState = () => {
+    dispatch(updateStore(updatedStore))
+  }
 
   return (
     <div className="flex items-center justify-center flex-1 w-full h-screen bg-gray-900">
@@ -77,6 +88,7 @@ const Terminal = () => {
         <PayModal
           address={data?.store.solana_address}
           price={Number(price)}
+          updateStoreState={updateStoreState}
           square={square}
           store={store?.store}
           total={data?.store.total}

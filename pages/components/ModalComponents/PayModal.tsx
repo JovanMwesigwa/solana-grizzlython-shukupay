@@ -19,6 +19,7 @@ type Props = {
   total: any
   store: any
   square: any
+  updateStoreState: any
 }
 
 const PayModal = ({
@@ -31,6 +32,7 @@ const PayModal = ({
   activeToken,
   price,
   slug,
+  updateStoreState,
 }: Props) => {
   const [showQR, setShowQR] = useState(false)
   const [done, setDone] = useState(false)
@@ -50,6 +52,7 @@ const PayModal = ({
         slug,
         total: Number(total),
       })
+      updateStoreState()
     }
   }
 
@@ -90,6 +93,9 @@ const PayModal = ({
 
   // console.log("TOTAL: ", square)
 
+  const createSquarePaymnet = async () => {
+    await request(price, "user@gmail.com", "SOL Terminal Payment")
+  }
   return (
     <div className="fixed inset-0 z-10 overflow-y-auto">
       <div className="flex items-center justify-center h-screen px-4 text-center sm:block sm:p-0">
@@ -158,6 +164,7 @@ const PayModal = ({
                     </button>
                     <button
                       onClick={closeModal}
+                      // onClick={createSquarePaymnet}
                       className="w-full p-3 mt-5 text-red-400"
                     >
                       Cancel

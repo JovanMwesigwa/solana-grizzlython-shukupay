@@ -6,7 +6,7 @@ const nextConfig = {
     supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_KEY,
   },
   images: {
-    domains: ["lh3.googleusercontent.com"],
+    domains: ["lh3.googleusercontent.com", "sweuhykuobqegymoicrj.supabase.co"],
   },
 }
 

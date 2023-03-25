@@ -1,4 +1,4 @@
-import { BsCalculatorFill } from "react-icons/bs"
+import { BsCalculatorFill, BsFillCheckCircleFill } from "react-icons/bs"
 import { FcPlus } from "react-icons/fc"
 import { IoIosArrowForward } from "react-icons/io"
 import { FcFrame } from "react-icons/fc"
@@ -31,7 +31,7 @@ import useCreateSquarePayment from "@/hooks/useCreatePayment"
 import usePaySquare from "@/hooks/usePaySquare"
 
 const Dashboard = () => {
-  const [notification, setNotification] = useState(null)
+  const [balance, setBalance] = useState<number | null>(0)
 
   const user = useUser()
 
@@ -39,11 +39,12 @@ const Dashboard = () => {
     (state: RootState) => state.store
   )
 
-  const {
-    data,
-    isLoading,
-    error: storeError,
-  } = useQuery([store.id], getStoreFromID)
+  const { data: square } = useQuery([store.id], getSquareCreds)
+
+  // const { data: storeBalance, isLoading: storeBalanceLoading } = useQuery(
+  //   [store.id],
+  //   getStoreBalance
+  // )
 
   // useEffect(() => {
   //   handleTriggerNotification()
@@ -72,8 +73,6 @@ const Dashboard = () => {
   //   }
   // }
 
-  // const { data: square } = useQuery([store?.store.id], getSquareCreds)
-
   // const { request, payment, paymentError } = useCreateSquarePayment(
   //   square.access_token
   // )
@@ -86,7 +85,7 @@ const Dashboard = () => {
   //   error: squareCredsError,
   // } = useQuery([store.id], getSquareCreds)
 
-  // console.log("TEST DEBUG HERE: ", square)
+  // console.log("TEST DEBUG HERE 22: ", store)
 
   // useEff
 
@@ -120,7 +119,7 @@ const Dashboard = () => {
 
             {/* <button onClick={handleTriggerNotification}>NOTIF</button> */}
 
-            {!isLoading && !error && (
+            {!loading && !error && (
               <Link href="/terminal" legacyBehavior>
                 <a
                   target="_blank"
@@ -153,7 +152,7 @@ const Dashboard = () => {
 
             {/*  */}
           </div>
-          <h1 className="text-6xl font-bold ">${data?.total}</h1>
+          {!loading && <h1 className="text-6xl font-bold ">${store.total}</h1>}
           <div className="flex flex-row items-center w-full mt-5 justify-evenly">
             {/*  */}
 
@@ -196,23 +195,18 @@ const Dashboard = () => {
             </p>
             {/*  */}
 
-            <Link href="/authorize" className="flex flex-row items-center ">
-              <h1 className="mr-1">Set up</h1>
-              <IoIosArrowForward />
-            </Link>
-
             <>
-              {/* {!squareCredsLoading && !squareCredsError ? ( */}
-              {/* <div className="flex flex-row items-center cursor-text "> */}
-              {/* <h1 className="mr-1">Connected</h1> */}
-              {/* <IoIosArrowForward /> */}
-              {/* </div> */}
-              {/* ) : ( */}
-              {/* <Link href="/authorize" className="flex flex-row items-center "> */}
-              {/* <h1 className="mr-1">Set up</h1> */}
-              {/* <IoIosArrowForward /> */}
-              {/* </Link> */}
-              {/* )} */}
+              {square ? (
+                <div className="flex flex-row items-center cursor-text ">
+                  <h1 className="mr-3 text-green-300">Connected</h1>
+                  <BsFillCheckCircleFill color="#81f564" />
+                </div>
+              ) : (
+                <Link href="/authorize" className="flex flex-row items-center ">
+                  <h1 className="mr-1">Set up</h1>
+                  <IoIosArrowForward />
+                </Link>
+              )}
             </>
           </div>
 

@@ -1,16 +1,19 @@
-import { getStore } from "@/lib/database"
+import { addSquareCreds, getStore } from "@/lib/database"
 import { RootState } from "@/state/store"
 import { useUser } from "@supabase/auth-helpers-react"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { useState, useEffect } from "react"
 import { useQuery } from "react-query"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 const SquareCallback = () => {
   const router = useRouter()
 
   const user = useUser()
 
+  const dispatch = useDispatch()
+  
   const [clientData, setClientData] = useState<null | {}>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<any>(null)
@@ -58,7 +61,14 @@ const SquareCallback = () => {
     }
   }
 
-  return <div>SquareCallback</div>
+  return (
+    <div className="flex flex-col items-center justify-center flex-1 w-full h-screen">
+      <h1>Your square POS was successfully connected!</h1>
+      <Link href="/dashboard">
+      <div className="p-2 px-8 py-4 my-5 font-medium text-black bg-yellow-500 rounded-full ">Go back to Paynapple</div>
+      </Link>
+    </div>
+  )
 }
 
 export default SquareCallback

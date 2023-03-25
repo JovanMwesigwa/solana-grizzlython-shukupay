@@ -1,11 +1,13 @@
-import { configureStore } from '@reduxjs/toolkit'
-import userReducer from './features/user/userSlice'
-import storeReducer from './features/store/storeSlice'
+import { configureStore } from "@reduxjs/toolkit"
+import userReducer from "./features/user/userSlice"
+import storeReducer from "./features/store/storeSlice"
+import squareReducer from "./features/square/squareSlice"
 
 export const store = configureStore({
   reducer: {
     user: userReducer,
-    store: storeReducer
+    store: storeReducer,
+    square: squareReducer,
   },
 })
 
