@@ -1,7 +1,8 @@
 import { FiShare } from "react-icons/fi"
+import useFetchSquareMenu from "@/hooks/useFetchSquareMenu"
 import PageProductCard from "../components/PageProductCard"
 import { useQuery } from "react-query"
-import { getProducts, getStoreFromSlug } from "@/lib/database"
+import { getProducts, getSquareCreds, getStoreFromSlug } from "@/lib/database"
 import { useRouter } from "next/router"
 import Image from "next/image"
 import logo from "../../public/paynapple-lg.png"
@@ -9,6 +10,7 @@ import sol from "../../public/solana.png"
 import usdc from "../../public/usdc.png"
 import { useSelector } from "react-redux"
 import { RootState } from "@/state/store"
+import useFetchSquareItems from "@/hooks/useFetchSquareItems"
 
 const Store = () => {
   const { query } = useRouter()
@@ -24,9 +26,19 @@ const Store = () => {
     error: productsError,
   } = useQuery(["storeID", data?.store?.id], getProducts)
 
-  // console.log("DEUBG HERE: ", data)
+  const { data: square } = useQuery([data?.store?.id], getSquareCreds)
 
-  if (isLoading && !error)
+  const { request } = useFetchSquareItems(square?.access_token)
+
+  const {
+    data: squareItems,
+    isLoading: menuItemsLoading,
+    error: menuItemsError,
+  } = useQuery([square?.access_token], request)
+
+  // console.log("DEUBG HERE: ", squareItems.response.objects)
+
+  if (isLoading && !error && menuItemsLoading)
     return (
       <div className="flex items-center justify-center">
         <p>Loading....</p>
@@ -34,7 +46,7 @@ const Store = () => {
     )
 
   return (
-    <div className="flex flex-col relative">
+    <div className="relative flex flex-col">
       <div className="flex flex-row items-center justify-between w-full h-16 px-12 shadow-sm">
         <div className="flex flex-row items-center justify-center">
           <div className="relative w-16 h-16 rounded-full">
@@ -93,11 +105,44 @@ const Store = () => {
                       name={data?.store?.slug}
                     />
                   ))}
+
+                  {!menuItemsLoading &&
+                    !menuItemsError &&
+                    squareItems?.response?.objects?.map((item: any) => (
+                      <div
+                        key={item.id}
+                        className="w-44 mb-4 cursor-pointer border-[0.5px] flex flex-col rounded-md bg-white h-44"
+                      >
+                        <div className="relative flex flex-1 bg-neutral-100">
+                          <h1 className="absolute z-10 px-4 py-1 text-sm font-medium text-black bg-white rounded-full bottom-3 right-3">
+                            <span className="text-[8px] mr-1">
+                              {
+                                item?.itemData?.variations[0]?.itemVariationData
+                                  .priceMoney.currency
+                              }
+                            </span>
+                            {(
+                              item?.itemData?.variations[0]?.itemVariationData
+                                ?.priceMoney?.amount / 100
+                            ).toFixed(2)}
+                          </h1>
+                        </div>
+                        <div className="flex items-center justify-center p-2 bg-white">
+                          <h1 className="text-xs font-medium text-black">
+                            {item?.itemData?.name}
+                          </h1>
+                        </div>
+                      </div>
+                    ))}
                 </div>
               )}
+
+              {/* {!menuItemsLoading && (
+                <div className="w-44 mb-4 cursor-pointer border-[0.5px] flex flex-col rounded-md bg-white h-44"></div>
+              )} */}
             </>
           )}
-          <div className="flex w-1/3 h-full relative" />
+          <div className="relative flex w-1/3 h-full" />
           <div className="flex w-1/3 fixed right-10 p-8 flex-col border-[0.5px] rounded-md  ">
             <h1 className="text-lg font-bold">
               <strong>Tip</strong>{" "}
@@ -106,11 +151,11 @@ const Store = () => {
             </h1>
 
             <div className="flex flex-row items-center border-[0.5px] rounded-md justify-between p-4 my-6 bg-neutral-50 full">
-              <div className="w-8 h-8 cursor-pointer relative overflow-hidden">
+              <div className="relative w-8 h-8 overflow-hidden cursor-pointer">
                 <Image src={sol} alt="solana logo" fill />
               </div>
 
-              <div className="w-8 h-8 cursor-pointer relative overflow-hidden">
+              <div className="relative w-8 h-8 overflow-hidden cursor-pointer">
                 <Image src={usdc} alt="solana logo" fill />
               </div>
 
