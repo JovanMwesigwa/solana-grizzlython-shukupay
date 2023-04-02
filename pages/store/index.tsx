@@ -1,5 +1,4 @@
 import { FiShare } from "react-icons/fi"
-import useFetchSquareMenu from "@/hooks/useFetchSquareMenu"
 import PageProductCard from "../components/PageProductCard"
 import { useQuery } from "react-query"
 import { getProducts, getSquareCreds, getStoreFromSlug } from "@/lib/database"
@@ -8,14 +7,12 @@ import Image from "next/image"
 import logo from "../../public/paynapple-lg.png"
 import sol from "../../public/solana.png"
 import usdc from "../../public/usdc.png"
-import { useSelector } from "react-redux"
-import { RootState } from "@/state/store"
 import useFetchSquareItems from "@/hooks/useFetchSquareItems"
 
 const Store = () => {
   const { query } = useRouter()
 
-  const { data, isLoading, error } = useQuery(
+  const { data, isLoading } = useQuery(
     ["fetchStore", query.s],
     getStoreFromSlug
   )
@@ -38,7 +35,7 @@ const Store = () => {
 
   // console.log("DEUBG HERE: ", squareItems.response.objects)
 
-  if (isLoading && !error && menuItemsLoading)
+  if (isLoading || menuItemsLoading)
     return (
       <div className="flex items-center justify-center">
         <p>Loading....</p>
@@ -86,7 +83,7 @@ const Store = () => {
           FEATURED / {data?.store?.name}
         </h4>
 
-        <div className="flex flex-row flex-1 w-full max-w-screen-lg my-5 ">
+        <div className="flex flex-row flex-1 w-full my-5 md:max-w-screen-lg ">
           {productsError ? (
             <h4>Something went wrong when fetching the store products</h4>
           ) : (

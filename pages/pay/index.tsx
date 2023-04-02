@@ -15,9 +15,22 @@ import {
   getStoreFromID,
   getStoreFromSlug,
 } from "@/lib/database"
+import ProductTab from "../components/CheckoutComponents/ProductTab"
+import { IoIosArrowBack, IoMdAdd, IoMdClose } from "react-icons/io"
+import { HiMinus } from "react-icons/hi"
+import { BsFillKeyboardFill } from "react-icons/bs"
+import QuantityTab from "../components/CheckoutComponents/QuantityTab"
+import PayOptionTab from "../components/CheckoutComponents/PayOptionTab"
+import CheckoutScan from "../components/CheckoutComponents/CheckoutScan"
 
 const Checkout = () => {
   const [activeToken, setActiveToken] = useState("USDC")
+  const [active, setActive] = useState("Product")
+  const [qty, setQty] = useState(1)
+  const [price, setPrice] = useState(5)
+
+  const [done, setDone] = useState(false)
+  const [token, setToken] = useState("USDC")
 
   const { query } = useRouter()
   const {
@@ -31,7 +44,8 @@ const Checkout = () => {
   const { data, isLoading, error } = useQuery([product?.image], getPictureUrl)
 
   const { qrRef, url, amount } = useCreatePayQR(
-    product?.price,
+    // product?.price,
+    price,
     product?.name,
     activeToken,
     successFunction,
@@ -62,62 +76,69 @@ const Checkout = () => {
     )
   }
 
+  const renderUI = () => {
+    switch (active) {
+      case "Product":
+        return (
+          <ProductTab
+            activeToken={activeToken}
+            data={data}
+            error={error}
+            isLoading={isLoading}
+            product={product}
+            rolex={rolex}
+            setActiveToken={setActiveToken}
+            sol={sol}
+            usdc={usdc}
+            setActive={setActive}
+            storeName={query.s}
+          />
+        )
+
+      case "AddOns":
+        return (
+          <QuantityTab
+            product={product}
+            qty={qty}
+            setActive={setActive}
+            setQty={setQty}
+            price={price}
+            setPrice={setPrice}
+          />
+        )
+      case "PayOption":
+        return (
+          <PayOptionTab
+            setActive={setActive}
+            setToken={setToken}
+            token={token}
+            price={price}
+          />
+        )
+      case "Scan":
+        return (
+          <CheckoutScan setActive={setActive} price={price} qrRef={qrRef} />
+        )
+      default:
+        return <div className="">Failed</div>
+    }
+  }
+
   return (
     <div className="flex flex-row items-center h-screen px-20 bg-neutral-100">
       <div className="flex flex-col justify-between flex-1 h-full p-10 bg-white shadow-md">
-        <h1 className="text-xl font-bold">{product?.name}</h1>
-        <div className="relative w-1/2 my-6 overflow-hidden rounded-md h-1/2 bg-neutral-50">
-          {!isLoading && !error && (
-            <Image
-              src={data ? data : rolex}
-              // src={rolex}
-              alt="product image"
-              fill
-            />
-          )}
-          <div ref={qrRef} />
-        </div>
+        <div className="h-full">{renderUI()}</div>
 
-        <div className="flex flex-col w-full">
-          <h1 className="text-2xl font-bold">Total: ${product?.price}</h1>
-          <p className="mt-6 mb-2 text-base">You will pay</p>
-          <div className="w-1/2 border-[0.5px] h-14  rounded-md flex flex-row items-center justify-between">
-            <h1 className="mx-4 text-xl ">{product?.price}</h1>
-
-            {activeToken === "USDC" ? (
-              <div className="w-32 h-full cursor-pointer justify-center border-l-[0.5px] flex flex-row items-center ">
-                <div
-                  onClick={() => setActiveToken("SOL")}
-                  className="relative w-10 h-10 mr-3 overflow-hidden"
-                >
-                  <Image src={usdc} alt="usdc logo" fill />
-                </div>
-                <h1 className="text-xl">{activeToken}</h1>
-              </div>
-            ) : (
-              <div
-                onClick={() => setActiveToken("USDC")}
-                className="w-32 h-full cursor-pointer justify-center border-l-[0.5px] flex flex-row items-center "
-              >
-                <div className="relative w-10 h-10 mr-3 overflow-hidden">
-                  <Image src={sol} alt="solana logo" fill />
-                </div>
-                <h1 className="text-xl">{activeToken}</h1>
-              </div>
-            )}
-          </div>
-        </div>
-        <button
-          type="submit"
-          className="p-3 mt-6 text-white bg-blue-500 rounded-md"
-        >
-          Proceed to payment
-        </button>
+        <a href="http://google.com" target="_blank" rel="noopener noreferrer">
+          <h5 className="font-light text-center text-neutral-300">
+            Powered by Paynapple
+          </h5>
+        </a>
       </div>
 
       {/* <div ref={qrRef} className="flex flex-1 w-44 h-44" /> */}
       <div className="flex flex-col justify-between w-1/3 h-full p-8">
-        <div className="relative flex items-center justify-center w-full overflow-hidden rounded-md bg-neutral-500 h-2/3"></div>
+        <div className="relative flex items-center justify-center w-full overflow-hidden rounded-md bg-neutral-500 h-3/6"></div>
         <div className="flex flex-col">
           <h4 className="text-sm">
             Add your email and you will get notified you when the seller

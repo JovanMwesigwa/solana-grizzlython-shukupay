@@ -43,54 +43,6 @@ const Dashboard = () => {
 
   const { data: square } = useQuery([store.id], getSquareCreds)
 
-  // const { data: storeBalance, isLoading: storeBalanceLoading } = useQuery(
-  //   [store.id],
-  //   getStoreBalance
-  // )
-
-  // useEffect(() => {
-  //   handleTriggerNotification()
-  // }, [data?.total])
-
-  // const handleTriggerNotification = () => {
-  //   if ("Notification" in window && Notification.permission === "granted") {
-  //     const newNotification = new Notification("New Terminal Payment Recieved!")
-  //     // setNotification(newNotification);
-  //     const audio = new Audio("../../public/sound.mp3")
-  //     audio.play()
-  //   } else if (
-  //     "Notification" in window &&
-  //     Notification.permission !== "denied"
-  //   ) {
-  //     Notification.requestPermission().then((permission) => {
-  //       if (permission === "granted") {
-  //         const newNotification = new Notification(
-  //           "New Terminal Payment Recieved!"
-  //         )
-  //         const audio = new Audio("../../public/sound.mp3")
-  //         audio.play()
-  //         // setNotification(newNotification);
-  //       }
-  //     })
-  //   }
-  // }
-
-  // const { request, payment, paymentError } = useCreateSquarePayment(
-  //   square.access_token
-  // )
-
-  // const { request: requestFunc } = usePaySquare(square.access_token)
-
-  // const {
-  //   data: squareData,
-  //   isLoading: squareCredsLoading,
-  //   error: squareCredsError,
-  // } = useQuery([store.id], getSquareCreds)
-
-  // console.log("TEST DEBUG HERE 22: ", store)
-
-  // useEff
-
   return (
     <Layout>
       <div className="flex flex-col w-full py-5">

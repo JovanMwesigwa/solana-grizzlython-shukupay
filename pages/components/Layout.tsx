@@ -28,11 +28,6 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   const { data, isLoading, error } = useQuery([user?.id], getStore)
 
-  // console.log("REDUXED LOAD: ", data)
-  // console.log("REDUXED USER: ", userState)
-  // console.log("REDUXED USER: ", authenticated)
-  // console.log("REDUXED ERROR: ", user)
-
   useEffect(() => {
     if (!authenticated && user) {
       dispatch(fetchedUser(user))
@@ -46,7 +41,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
   if (loading)
     return (
-      <div className="flex w-full h-full items-center justify-center">
+      <div className="flex items-center justify-center w-full h-full">
         <h5>Loading...</h5>
       </div>
     )
@@ -81,3 +76,5 @@ const Layout = ({ children }: { children: ReactNode }) => {
 }
 
 export default Layout
+
+export async function getServerSideProps(context: any) {}
