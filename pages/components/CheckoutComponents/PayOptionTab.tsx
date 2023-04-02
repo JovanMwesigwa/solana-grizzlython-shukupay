@@ -1,13 +1,28 @@
+import { getStoreFromID } from "@/lib/database"
 import { IoIosArrowBack } from "react-icons/io"
+import { useQuery } from "react-query"
 
 type Props = {
   token: any
   price: number
   setToken: any
+  setStoreBalance: any
   setActive: any
+  storeId: number | string
+  setStoreAddress: any
 }
 
-const PayOptionTab = ({ setActive, setToken, token, price }: Props) => {
+const PayOptionTab = ({
+  storeId,
+  setActive,
+  setStoreBalance,
+  setToken,
+  setStoreAddress,
+  token,
+  price,
+}: Props) => {
+  const { data, isLoading } = useQuery([storeId], getStoreFromID)
+
   return (
     <div className="relative flex flex-col items-center h-full my-5 justify-evenly">
       <div
@@ -48,7 +63,11 @@ const PayOptionTab = ({ setActive, setToken, token, price }: Props) => {
 
       <button
         type="submit"
-        onClick={() => setActive("Scan")}
+        onClick={() => {
+          setActive("Scan")
+          setStoreAddress(data.solana_address)
+          setStoreBalance(data.total)
+        }}
         className="w-full p-3 mt-6 text-white bg-blue-500 rounded-md"
       >
         Proceed to checkout

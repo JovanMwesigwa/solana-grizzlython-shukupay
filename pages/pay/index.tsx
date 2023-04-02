@@ -7,18 +7,16 @@ import useCreatePayQR from "@/hooks/useCreatePayQR"
 import { useEffect, useState } from "react"
 import { createQR } from "@solana/pay"
 import { useRouter } from "next/router"
-import { useQuery } from "react-query"
+import { useMutation, useQuery } from "react-query"
 import {
   getPictureUrl,
   getProduct,
   getStore,
   getStoreFromID,
   getStoreFromSlug,
+  updateStoreTotalBalance,
 } from "@/lib/database"
 import ProductTab from "../components/CheckoutComponents/ProductTab"
-import { IoIosArrowBack, IoMdAdd, IoMdClose } from "react-icons/io"
-import { HiMinus } from "react-icons/hi"
-import { BsFillKeyboardFill } from "react-icons/bs"
 import QuantityTab from "../components/CheckoutComponents/QuantityTab"
 import PayOptionTab from "../components/CheckoutComponents/PayOptionTab"
 import CheckoutScan from "../components/CheckoutComponents/CheckoutScan"
@@ -31,6 +29,9 @@ const Checkout = () => {
 
   const [done, setDone] = useState(false)
   const [token, setToken] = useState("USDC")
+  const [storeAddress, setStoreAddress] = useState("0xAddressStore")
+  const [storeBalance, setStoreBalance] = useState("")
+  const [paid, setPaid] = useState(false)
 
   const { query } = useRouter()
   const {
@@ -39,7 +40,32 @@ const Checkout = () => {
     isError: productsError,
   } = useQuery([query.p], getProduct)
 
-  const successFunction = () => {}
+  const mutation = useMutation(updateStoreTotalBalance, {
+    onSuccess: async () => {
+      console.log("SUCCESS")
+      // await request(price, "user@gmail.com", "Paynapple: Item checkout order...")
+      setPaid(false)
+    },
+    onError(error) {
+      console.log(error)
+      // setDone(false)
+      setPaid(false)
+    },
+  })
+
+  const successFunction = () => {
+    //
+    setDone(true)
+
+    if (!paid && !done) {
+      mutation.mutate({
+        amount: price,
+        slug: query.s,
+        total: Number(storeBalance),
+      })
+      // updateStoreState()
+    }
+  }
 
   const { data, isLoading, error } = useQuery([product?.image], getPictureUrl)
 
@@ -49,17 +75,20 @@ const Checkout = () => {
     product?.name,
     activeToken,
     successFunction,
-    // store.solana_address
-    "0xAddress"
+    storeAddress,
+    done,
+    setDone
   )
 
   // Show the QR code
   useEffect(() => {
-    const qr = createQR(url, 512)
-    if (qrRef.current && amount.isGreaterThan(0)) {
-      qrRef.current.className = "w-12 h-12"
-      qrRef.current.innerHTML = ""
-      qr.append(qrRef.current)
+    if (!done) {
+      const qr = createQR(url, 512)
+      if (qrRef.current && amount.isGreaterThan(0)) {
+        qrRef.current.className = "w-12 h-12"
+        qrRef.current.innerHTML = ""
+        qr.append(qrRef.current)
+      }
     }
   })
 
@@ -113,11 +142,21 @@ const Checkout = () => {
             setToken={setToken}
             token={token}
             price={price}
+            storeId={product?.store}
+            // setStoreSlug={setStoreSlug}
+            setStoreBalance={setStoreBalance}
+            setStoreAddress={setStoreAddress}
           />
         )
       case "Scan":
         return (
-          <CheckoutScan setActive={setActive} price={price} qrRef={qrRef} />
+          <CheckoutScan
+            done={done}
+            setPaid={setPaid}
+            setActive={setActive}
+            price={price}
+            qrRef={qrRef}
+          />
         )
       default:
         return <div className="">Failed</div>
@@ -138,7 +177,7 @@ const Checkout = () => {
 
       {/* <div ref={qrRef} className="flex flex-1 w-44 h-44" /> */}
       <div className="flex flex-col justify-between w-1/3 h-full p-8">
-        <div className="relative flex items-center justify-center w-full overflow-hidden rounded-md bg-neutral-500 h-3/6"></div>
+        <div className="relative flex items-center justify-center w-full overflow-hidden rounded-md bg-neutral-200 h-3/6"></div>
         <div className="flex flex-col">
           <h4 className="text-sm">
             Add your email and you will get notified you when the seller
